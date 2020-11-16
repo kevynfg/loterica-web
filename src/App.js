@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+import axios from 'axios';
 import Form from './components/Form/Form';
 import Numbers from './components/Numbers/Numbers';
 import PickedNumbers from './components/PickedNumbers/PickedNumbers';
 import Number from './components/Number/Number';
 
 function getEmptyArray() {
-  const array = Array.from({ length: 60 }).map((_, index) => {
+  const array = Array.from({ length: 25 }).map((_, index) => {
     const id = index + 1;
-    const description = id.toString().padStart(2, '0');
+    const description = id.toString().padStart(3, '0');
 
     return {
       id,
@@ -24,7 +25,7 @@ function getEmptyArray() {
 //Existe uma regra, que estas funções não geram 1
 //por isso o + 1 é usado
 //vai até o número 61
-function generateNumber(min = 1, max = 60) {
+function generateNumber(min = 1, max = 25) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
@@ -33,9 +34,24 @@ export default function App() {
   const [pickedNumbers, setPickedNumbers] = useState([]);
   const [isCalculating, setIsCalculating] = useState(false);
   const [limit, setLimit] = useState(1);
+  const [dataLotoFacil, setDataLotoFacil] = useState([]);
 
   const canRun = useRef(false);
   //let canRun = false;
+
+  useEffect(() => {
+    async function getDataLotoFacil() {
+      try {
+        const { data } = await axios.get(
+          `https://lotericas.io/api/v1/jogos/lotofacil/lasted`
+        );
+        setDataLotoFacil(data.data[0]);
+      } catch (error) {
+        alert('ocorreu um erro ao buscar os items');
+      }
+    }
+    getDataLotoFacil();
+  }, []);
 
   useEffect(() => {
     if (!canRun.current) {
@@ -55,11 +71,12 @@ export default function App() {
          */
         return;
       }
-
+      const { dezenasSorteadasOrdemSorteio } = dataLotoFacil;
       //Faz cópia dos dois arrays gerados para trabalhar depois
       const newNumber = generateNumber();
       const newNumbers = [...numbers];
       const newPickedNumbers = [...pickedNumbers];
+      console.log(dezenasSorteadasOrdemSorteio);
 
       //Se encontrar o item sorteado no array -> incrementa o contador dele
       const item = newNumbers.find((item) => item.value === newNumber);
@@ -91,13 +108,18 @@ export default function App() {
   };
 
   const handleButtonClick = () => {
+    if (!limit) {
+      return;
+    }
+
     canRun.current = true;
-    //canRun = true;
 
     setNumbers(getEmptyArray());
     setPickedNumbers([]);
     setIsCalculating(true);
   };
+
+  console.log(dataLotoFacil);
 
   return (
     <div className="container">
