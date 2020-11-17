@@ -22,6 +22,8 @@ function getEmptyArray() {
   return array;
 }
 
+const JOGOS_LOTOFACIL = [];
+
 //Existe uma regra, que estas funções não geram 1
 //por isso o + 1 é usado
 //vai até o número 61
@@ -35,9 +37,12 @@ export default function App() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [limit, setLimit] = useState(1);
   const [dataLotoFacil, setDataLotoFacil] = useState([]);
-
+  const [gameNumbers, setGameNumbers] = useState([]);
+  const [gameNumbersBefore, setGameNumbersBefore] = useState([]);
+  const [dataBeforeActualLotoFacil, setBeforeActualLotoFacil] = useState([]);
   const canRun = useRef(false);
   //let canRun = false;
+  const idGameBefore = useRef('');
 
   useEffect(() => {
     async function getDataLotoFacil() {
@@ -45,13 +50,51 @@ export default function App() {
         const { data } = await axios.get(
           `https://lotericas.io/api/v1/jogos/lotofacil/lasted`
         );
+
+        const { listaDezenas } = data.data[0];
+        setGameNumbers(listaDezenas);
         setDataLotoFacil(data.data[0]);
+        // const dataGameBefore = await axios.get(
+        //   `https://lotericas.io/api/v1/jogos/lotofacil/${concurso - 1}`
+        // );
+
+        // setBeforeActualLotoFacil(dataGameBefore.data);
+        // setGameNumbersBefore();
       } catch (error) {
         alert('ocorreu um erro ao buscar os items');
       }
     }
+
+    async function getBeforeActualLotoFacil() {
+      try {
+        const dataFetch = await axios.get(
+          `https://lotericas.io/api/v1/jogos/lotofacil/lasted`
+        );
+
+        const { concurso } = dataFetch.data.data[0];
+        const { data } = await axios.get(
+          `https://lotericas.io/api/v1/jogos/lotofacil/${concurso - 1}`
+        );
+
+        console.log('data 1', data.data);
+        const { listaDezenas } = data.data;
+        setGameNumbersBefore(listaDezenas);
+        setBeforeActualLotoFacil(data.data);
+      } catch (error) {
+        alert('ocorreu um erro ao buscar os dados');
+      }
+    }
+
+    getBeforeActualLotoFacil();
     getDataLotoFacil();
   }, []);
+
+  const getGameBefore = (gameDate) => {
+    const { concurso } = gameDate;
+    return concurso - 1;
+  };
+
+  idGameBefore.current = getGameBefore(dataLotoFacil);
 
   useEffect(() => {
     if (!canRun.current) {
@@ -71,12 +114,12 @@ export default function App() {
          */
         return;
       }
-      const { dezenasSorteadasOrdemSorteio } = dataLotoFacil;
-      //Faz cópia dos dois arrays gerados para trabalhar depois
+
       const newNumber = generateNumber();
       const newNumbers = [...numbers];
       const newPickedNumbers = [...pickedNumbers];
-      console.log(dezenasSorteadasOrdemSorteio);
+
+      //console.log(numeroConcursoAnterior);
 
       //Se encontrar o item sorteado no array -> incrementa o contador dele
       const item = newNumbers.find((item) => item.value === newNumber);
@@ -103,6 +146,9 @@ export default function App() {
     };
   }, [limit, numbers, pickedNumbers, isCalculating]);
 
+  console.log('Números atuais', gameNumbers);
+  console.log('Números de ontem', gameNumbersBefore);
+
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
   };
@@ -111,6 +157,12 @@ export default function App() {
     if (!limit) {
       return;
     }
+    JOGOS_LOTOFACIL.splice(0, JOGOS_LOTOFACIL.length);
+
+    JOGOS_LOTOFACIL.push(
+      { Today: gameNumbers },
+      { Yesterday: gameNumbersBefore }
+    );
 
     canRun.current = true;
 
@@ -119,7 +171,7 @@ export default function App() {
     setIsCalculating(true);
   };
 
-  console.log(dataLotoFacil);
+  console.log('Jogos', JOGOS_LOTOFACIL);
 
   return (
     <div className="container">
