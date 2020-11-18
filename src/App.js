@@ -22,7 +22,10 @@ function getEmptyArray() {
   return array;
 }
 
-const JOGOS_LOTOFACIL = [];
+let JOGOS_LOTOFACIL = {
+  DEZENA_MIN: 0,
+  DEZENA_MAX: 0,
+};
 
 //Existe uma regra, que estas funções não geram 1
 //por isso o + 1 é usado
@@ -40,6 +43,7 @@ export default function App() {
   const [gameNumbers, setGameNumbers] = useState([]);
   const [gameNumbersBefore, setGameNumbersBefore] = useState([]);
   const [gameNumbersSorted, setGameNumbersSorted] = useState([]);
+  const [selectedGameNumbers, setSelectedGameNumbers] = useState([]);
   const [dataBeforeActualLotoFacil, setBeforeActualLotoFacil] = useState([]);
   const canRun = useRef(false);
   //let canRun = false;
@@ -97,12 +101,17 @@ export default function App() {
       gameNumbersBefore.forEach((item) => {
         const numeroSorteado = numero;
         if (numeroSorteado === item) {
-          sorteados.push(numeroSorteado);
+          sorteados.push(parseInt(numeroSorteado));
         }
       });
     });
+    // JOGOS_LOTOFACIL.DEZENA_MIN = sorteados[0];
+    // JOGOS_LOTOFACIL.DEZENA_MAX = sorteados[sorteados.length - 1];
     setGameNumbersSorted(sorteados);
     console.log('Repetidos:', sorteados);
+
+    // console.log('Dezena mínima:', JOGOS_LOTOFACIL.DEZENA_MIN);
+    // console.log('Dezena máxima:', JOGOS_LOTOFACIL.DEZENA_MAX);
   }, [gameNumbers, gameNumbersBefore]);
 
   useEffect(() => {
@@ -125,18 +134,34 @@ export default function App() {
       const newNumbers = [...numbers];
       const newPickedNumbers = [...pickedNumbers];
 
-      //console.log(numeroConcursoAnterior);
+      const DezenasSorteadas = [...gameNumbersSorted];
+      const random = Math.floor(Math.random() * DezenasSorteadas.length) + 1;
+      console.log('Random:', newNumber);
+      const numerosSelecionados = [...selectedGameNumbers];
+      const itemSelecionado = DezenasSorteadas.find(
+        (item) => item === DezenasSorteadas[random]
+      );
+
+      // const numerosFiltrados = newNumbers.filter((filtrado) =>
+      //   filtrado.value.toString().includes()
+      // );
 
       //Se encontrar o item sorteado no array -> incrementa o contador dele
+      // prettier-ignore
+
       const item = newNumbers.find((item) => item.value === newNumber);
+
       item.count++;
 
       //Se o contador chegou no limite colocado no input
       if (item.count === limit) {
         newPickedNumbers.push(item.value);
+        numerosSelecionados.push(itemSelecionado);
       }
       setNumbers(newNumbers);
       setPickedNumbers(newPickedNumbers);
+      setSelectedGameNumbers(numerosSelecionados);
+      console.log('numero selecionado:', selectedGameNumbers);
     }, 4); // Valor mínimo
 
     /**
@@ -149,7 +174,14 @@ export default function App() {
       console.log('clearInterval');
       clearTimeout(interval);
     };
-  }, [limit, numbers, pickedNumbers, isCalculating]);
+  }, [
+    limit,
+    numbers,
+    pickedNumbers,
+    isCalculating,
+    gameNumbersSorted,
+    selectedGameNumbers,
+  ]);
 
   // console.log('Números atuais', gameNumbers);
   // console.log('Números de ontem', gameNumbersBefore);
@@ -163,12 +195,6 @@ export default function App() {
     if (!limit) {
       return;
     }
-    JOGOS_LOTOFACIL.splice(0, JOGOS_LOTOFACIL.length);
-
-    JOGOS_LOTOFACIL.push(
-      { Today: gameNumbers },
-      { Yesterday: gameNumbersBefore }
-    );
 
     canRun.current = true;
 
