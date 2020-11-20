@@ -22,11 +22,6 @@ function getEmptyArray() {
   return array;
 }
 
-let JOGOS_LOTOFACIL = {
-  DEZENA_MIN: 0,
-  DEZENA_MAX: 0,
-};
-
 //Existe uma regra, que estas funções não geram 1
 //por isso o + 1 é usado
 //vai até o número 61
@@ -45,8 +40,8 @@ export default function App() {
   const [gameNumbersSorted, setGameNumbersSorted] = useState([]);
   const [selectedGameNumbers, setSelectedGameNumbers] = useState([]);
   const [dataBeforeActualLotoFacil, setBeforeActualLotoFacil] = useState([]);
+  const [firstForm, setFirstForm] = useState(false);
   const canRun = useRef(false);
-  //let canRun = false;
 
   const getGameBefore = (gameDate) => {
     const { concurso } = gameDate;
@@ -59,7 +54,9 @@ export default function App() {
         const { data } = await axios.get(
           `https://lotericas.io/api/v1/jogos/lotofacil/lasted`
         );
+
         console.log('Jogo Atual', data.data[0]);
+
         const { listaDezenas } = data.data[0];
         setGameNumbers(listaDezenas);
         setDataLotoFacil(data.data[0]);
@@ -67,17 +64,18 @@ export default function App() {
         alert('ocorreu um erro ao buscar os items');
       }
     }
+
+    canRun.current = true;
     getDataLotoFacil();
   }, []);
 
   useEffect(() => {
     const getBeforeActualLotoFacil = async () => {
       try {
-        const dataFetch = await axios.get(
-          `https://lotericas.io/api/v1/jogos/lotofacil/lasted`
-        );
+        if (canRun.current) {
+          return;
+        }
 
-        const { concurso } = dataFetch.data.data[0];
         const { data } = await axios.get(
           `https://lotericas.io/api/v1/jogos/lotofacil/${getGameBefore(
             dataLotoFacil
@@ -86,32 +84,35 @@ export default function App() {
 
         console.log('Jogo Anterior', data.data);
         const { listaDezenas } = data.data;
-        setGameNumbersBefore(listaDezenas);
+
         setBeforeActualLotoFacil(data.data);
-      } catch (error) {
-        alert('ocorreu um erro ao buscar os dados');
+        setGameNumbersBefore(listaDezenas);
+      } catch (err) {
+        console.log(err);
       }
     };
     getBeforeActualLotoFacil();
+    canRun.current = false;
   }, [dataLotoFacil]);
 
   useEffect(() => {
-    let sorteados = [];
-    gameNumbers.forEach((numero) => {
-      gameNumbersBefore.forEach((item) => {
-        const numeroSorteado = numero;
-        if (numeroSorteado === item) {
-          sorteados.push(parseInt(numeroSorteado));
-        }
+    const interval = setTimeout(() => {
+      let sorteados = [];
+      gameNumbers.forEach((numero) => {
+        gameNumbersBefore.forEach((item) => {
+          const numeroSorteado = numero;
+          if (numeroSorteado === item) {
+            sorteados.push(parseInt(numeroSorteado));
+          }
+        });
       });
-    });
-    // JOGOS_LOTOFACIL.DEZENA_MIN = sorteados[0];
-    // JOGOS_LOTOFACIL.DEZENA_MAX = sorteados[sorteados.length - 1];
-    setGameNumbersSorted(sorteados);
-    console.log('Repetidos:', sorteados);
 
-    // console.log('Dezena mínima:', JOGOS_LOTOFACIL.DEZENA_MIN);
-    // console.log('Dezena máxima:', JOGOS_LOTOFACIL.DEZENA_MAX);
+      setGameNumbersSorted(sorteados);
+      console.log('Repetidos:', sorteados);
+    }, 1000);
+    return () => {
+      clearTimeout(interval);
+    };
   }, [gameNumbers, gameNumbersBefore]);
 
   useEffect(() => {
@@ -142,16 +143,31 @@ export default function App() {
         (item) => item === DezenasSorteadas[random]
       );
 
-      // const numerosFiltrados = newNumbers.filter((filtrado) =>
-      //   filtrado.value.toString().includes()
-      // );
-
-      //Se encontrar o item sorteado no array -> incrementa o contador dele
-      // prettier-ignore
-
       const item = newNumbers.find((item) => item.value === newNumber);
 
       item.count++;
+      let ArrayTeste = [];
+
+      function randomizar(array) {
+        for (let i = array.length - 1; i >= 5; i--) {
+          const newRandom = Math.floor(Math.random() * i);
+          const temp = array[i];
+          if (array[i] === array[newRandom]) return;
+          array[i] = array[newRandom];
+          array[newRandom] = temp;
+          return array;
+        }
+      }
+      //console.log(ArrayTeste.sort((a, b) => a - b));
+
+      const novoArray = gameNumbersSorted.sort(() => {
+        return 0.5 - Math.random();
+      });
+
+      console.log(
+        'randomize',
+        novoArray.slice(gameNumbersSorted, 5).sort((a, b) => a - b)
+      );
 
       //Se o contador chegou no limite colocado no input
       if (item.count === limit) {
@@ -181,11 +197,8 @@ export default function App() {
     isCalculating,
     gameNumbersSorted,
     selectedGameNumbers,
+    gameNumbers,
   ]);
-
-  // console.log('Números atuais', gameNumbers);
-  // console.log('Números de ontem', gameNumbersBefore);
-  // console.log('Números Sorteados', gameNumbersSorted);
 
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
@@ -195,7 +208,6 @@ export default function App() {
     if (!limit) {
       return;
     }
-
     canRun.current = true;
 
     setNumbers(getEmptyArray());
@@ -207,26 +219,28 @@ export default function App() {
     <div className="container">
       <h1 className="center">React Megasena</h1>
 
-      <Form
-        onButtonClick={handleButtonClick}
-        onLimitChange={handleLimitChange}
-        data={{ isCalculating, limit }}
-      />
+      {!firstForm && (
+        <Form
+          onButtonClick={handleButtonClick}
+          onLimitChange={handleLimitChange}
+          data={{ isCalculating, limit }}
+        />
+      )}
+      {!firstForm && (
+        <Numbers>
+          {numbers.map((number) => {
+            const { id, value } = number;
+            const isPicked = pickedNumbers.some((item) => item === value);
 
-      <Numbers>
-        {numbers.map((number) => {
-          const { id, value } = number;
-          const isPicked = pickedNumbers.some((item) => item === value);
-
-          return (
-            <div key={id}>
-              <Number picked={isPicked}>{number}</Number>
-            </div>
-          );
-        })}
-      </Numbers>
-
-      <PickedNumbers>{pickedNumbers}</PickedNumbers>
+            return (
+              <div key={id}>
+                <Number picked={isPicked}>{number}</Number>
+              </div>
+            );
+          })}
+        </Numbers>
+      )}
+      {!firstForm && <PickedNumbers>{pickedNumbers}</PickedNumbers>}
     </div>
   );
 }
