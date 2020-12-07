@@ -34,6 +34,7 @@ export default function App() {
   const [pickedNumbers, setPickedNumbers] = useState([]);
   const [isCalculating, setIsCalculating] = useState(false);
   const [limit, setLimit] = useState(1);
+  const [limitProbability, setLimitProbability] = useState(1);
   const [dataLotoFacil, setDataLotoFacil] = useState([]);
   const [gameNumbers, setGameNumbers] = useState([]);
   const [gameNumbersBefore, setGameNumbersBefore] = useState([]);
@@ -121,13 +122,8 @@ export default function App() {
     }
 
     const interval = setTimeout(() => {
-      if (pickedNumbers.length === 6) {
+      if (pickedNumbers.length === 1) {
         setIsCalculating(false);
-
-        /**
-         * Retorno simples. O clearInterval
-         * é feito ao final do useEffect
-         */
         return;
       }
 
@@ -135,49 +131,73 @@ export default function App() {
       const newNumbers = [...numbers];
       const newPickedNumbers = [...pickedNumbers];
 
-      const DezenasSorteadas = [...gameNumbersSorted];
-      const random = Math.floor(Math.random() * DezenasSorteadas.length) + 1;
-      console.log('Random:', newNumber);
-      const numerosSelecionados = [...selectedGameNumbers];
-      const itemSelecionado = DezenasSorteadas.find(
-        (item) => item === DezenasSorteadas[random]
-      );
-
       const item = newNumbers.find((item) => item.value === newNumber);
-
       item.count++;
-      let ArrayTeste = [];
 
-      function randomizar(array) {
-        for (let i = array.length - 1; i >= 5; i--) {
-          const newRandom = Math.floor(Math.random() * i);
-          const temp = array[i];
-          if (array[i] === array[newRandom]) return;
-          array[i] = array[newRandom];
-          array[newRandom] = temp;
-          return array;
+      /*
+      ESTE BLOCO CONTEM CÓDIGO DE PERMUTAÇÃO EM TESTE
+      */
+
+      // let permArr = [],
+      //   usedChars = [];
+      // function permute(input) {
+      //   let i, ch;
+      //   for (i = 0; i < input.length; i++) {
+      //     ch = input.splice(i, 1)[0];
+      //     usedChars.push(ch);
+      //     if (input.length === 0) {
+      //       permArr.push(usedChars.slice());
+      //     }
+      //     permute(input);
+      //     input.splice(i, 0, ch);
+      //     usedChars.pop();
+      //   }
+      //   return permArr;
+      // }
+
+      const moreGamesArray = (number, count = 0) => {
+        let RandomizedArray = [];
+        if (number) {
+          RandomizedArray = gameNumbersSorted.sort(() => {
+            return 0.5 - Math.random();
+          });
         }
-      }
-      //console.log(ArrayTeste.sort((a, b) => a - b));
+        const item = RandomizedArray.slice(gameNumbersSorted, number).sort(
+          (a, b) => a - b
+        );
 
-      const novoArray = gameNumbersSorted.sort(() => {
-        return 0.5 - Math.random();
-      });
+        // if (item) {
+        //   setSelectedGameNumbers([...selectedGameNumbers, item]);
+        // }
+        //prettier-ignore
+        if (selectedGameNumbers.includes(item)) {
+          let idx = selectedGameNumbers.indexOf(item);
+          setSelectedGameNumbers(selectedGameNumbers.splice(idx, 1, item));
+        } else {
+          setSelectedGameNumbers([...selectedGameNumbers, item]);
+        }
+        console.log('Item', item);
+        return item;
+      };
 
-      console.log(
-        'randomize',
-        novoArray.slice(gameNumbersSorted, 5).sort((a, b) => a - b)
-      );
+      console.log('Randomized', moreGamesArray(4));
 
       //Se o contador chegou no limite colocado no input
       if (item.count === limit) {
         newPickedNumbers.push(item.value);
-        numerosSelecionados.push(itemSelecionado);
       }
       setNumbers(newNumbers);
       setPickedNumbers(newPickedNumbers);
-      setSelectedGameNumbers(numerosSelecionados);
-      console.log('numero selecionado:', selectedGameNumbers);
+
+      // console.log('Heap Array', permute(gameNumbersSorted));
+
+      const organizedArray = selectedGameNumbers.sort((a, b) => a - b);
+      console.log(
+        'numero selecionado:',
+        organizedArray.filter(
+          (value, index, array) => array.indexOf(value) === index
+        )
+      );
     }, 4); // Valor mínimo
 
     /**
@@ -203,6 +223,9 @@ export default function App() {
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
   };
+  const handleProbabilityChange = (newLimit) => {
+    setLimitProbability(newLimit);
+  };
 
   const handleButtonClick = () => {
     if (!limit) {
@@ -223,7 +246,8 @@ export default function App() {
         <Form
           onButtonClick={handleButtonClick}
           onLimitChange={handleLimitChange}
-          data={{ isCalculating, limit }}
+          onProbabilityChange={handleProbabilityChange}
+          data={{ isCalculating, limit, limitProbability }}
         />
       )}
       {!firstForm && (
