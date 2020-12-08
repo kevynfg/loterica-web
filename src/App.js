@@ -166,10 +166,6 @@ export default function App() {
           (a, b) => a - b
         );
 
-        // if (item) {
-        //   setSelectedGameNumbers([...selectedGameNumbers, item]);
-        // }
-
         //prettier-ignore
         if (selectedGameNumbers.includes(item)) {
           let idx = selectedGameNumbers.indexOf(item);
@@ -177,10 +173,22 @@ export default function App() {
         } else {
           setSelectedGameNumbers([...selectedGameNumbers, item]);
         }
+
+        let newArray = [];
+        for (let i = 0; i < selectedGameNumbers.length; i++) {
+          const idx = selectedGameNumbers[i];
+          if (selectedGameNumbers.includes(idx)) {
+            const idxOf = selectedGameNumbers.indexOf(idx);
+            selectedGameNumbers.slice(idxOf, 1);
+          }
+          newArray.push(idx);
+          console.log('Array teste sem duplicates', newArray.sort());
+        }
+
         return item;
       };
 
-      console.log('Randomized', moreGamesArray(4));
+      console.log('Itens teste sem duplicates 2', moreGamesArray(4));
 
       //Se o contador chegou no limite colocado no input
       if (item.count === limit) {
@@ -194,7 +202,7 @@ export default function App() {
       //Filtrar os números sem duplicates
       const organizedArray = selectedGameNumbers.sort((a, b) => a - b);
       console.log(
-        'numero selecionado:',
+        'Selected Numbers:',
         organizedArray
           .filter((item, index) => {
             return organizedArray.indexOf(item) === index;
