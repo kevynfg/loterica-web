@@ -122,7 +122,7 @@ export default function App() {
     }
 
     const interval = setTimeout(() => {
-      if (pickedNumbers.length === 1) {
+      if (pickedNumbers.length === 15) {
         setIsCalculating(false);
         return;
       }
@@ -155,7 +155,7 @@ export default function App() {
       //   return permArr;
       // }
 
-      const moreGamesArray = (number, count = 0) => {
+      const moreGamesArray = (number) => {
         let RandomizedArray = [];
         if (number) {
           RandomizedArray = gameNumbersSorted.sort(() => {
@@ -169,14 +169,14 @@ export default function App() {
         // if (item) {
         //   setSelectedGameNumbers([...selectedGameNumbers, item]);
         // }
+
         //prettier-ignore
         if (selectedGameNumbers.includes(item)) {
           let idx = selectedGameNumbers.indexOf(item);
-          setSelectedGameNumbers(selectedGameNumbers.splice(idx, 1, item));
+          setSelectedGameNumbers(selectedGameNumbers.splice(idx, 1));
         } else {
           setSelectedGameNumbers([...selectedGameNumbers, item]);
         }
-        console.log('Item', item);
         return item;
       };
 
@@ -191,13 +191,24 @@ export default function App() {
 
       // console.log('Heap Array', permute(gameNumbersSorted));
 
+      //Filtrar os números sem duplicates
       const organizedArray = selectedGameNumbers.sort((a, b) => a - b);
       console.log(
         'numero selecionado:',
-        organizedArray.filter(
-          (value, index, array) => array.indexOf(value) === index
-        )
+        organizedArray
+          .filter((item, index) => {
+            return organizedArray.indexOf(item) === index;
+          })
+          .sort()
       );
+
+      // const newArray = [...new Set(selectedGameNumbers)];
+      // console.log(
+      //   'sem duplicate',
+      //   newArray
+      //     .filter((item, index) => newArray.indexOf(item) === index)
+      //     .sort()
+      // );
     }, 4); // Valor mínimo
 
     /**
