@@ -18,61 +18,65 @@ export default function Form({
 
   return (
     <form>
-      <div styles={styles.flexRow}>
-        <div
-          className="input-field"
-          style={{ width: '200px', marginRight: '10px' }}
-        >
-          <input
-            id="inputLimit"
-            type="number"
-            min="1"
-            max="999"
-            step="1"
-            value={limit}
-            onChange={handleLimitChange}
-            disabled={isCalculating}
-          />
-          <label htmlFor="inputLimit" className="active">
-            Quantidade máxima de sorteios:
-          </label>
-          <div
-            className="input-field"
-            style={{ width: '200px', marginRight: '10px' }}
-          >
-            <input
-              id="inputProbability"
-              type="number"
-              min="1"
-              max="999"
-              step="1"
-              value={limitProbability}
-              onChange={handleProbabilityChange}
-              disabled={isCalculating}
-            />
-            <label htmlFor="inputProbability" className="active">
-              Probabilidades:
-            </label>
+      <div className="col s12">
+        <div className="row">
+          <div className="input-field col s6">
+            <div styles={styles.flexRow}>
+              <div
+                className="input-field col s6"
+                style={{ width: '200px', marginRight: '10px' }}
+              >
+                <input
+                  id="inputLimit"
+                  type="number"
+                  min="1"
+                  max="999"
+                  step="1"
+                  value={limit}
+                  onChange={handleLimitChange}
+                  disabled={isCalculating}
+                />
+                <label htmlFor="inputLimit" className="active">
+                  Quantidade de sorteios:
+                </label>
+                <button
+                  type="submit"
+                  className="waves-effect waves-light btn"
+                  onClick={onButtonClick}
+                  disabled={isCalculating}
+                >
+                  Calcular
+                </button>
+              </div>
+              <div
+                className="input-field col s6"
+                style={{ width: '200px', marginRight: '10px' }}
+              >
+                <input
+                  id="inputProbability"
+                  type="number"
+                  min="1"
+                  max="999"
+                  step="1"
+                  value={limitProbability}
+                  onChange={handleProbabilityChange}
+                  disabled={isCalculating}
+                />
+                <label htmlFor="inputProbability" className="active">
+                  Probabilidades:
+                </label>
+                <button
+                  type="submit"
+                  className="waves-effect waves-light btn"
+                  onClick={onButtonClick}
+                  disabled={isCalculating}
+                >
+                  Probabilidades
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-
-        <button
-          type="submit"
-          className="waves-effect waves-light btn"
-          onClick={onButtonClick}
-          disabled={isCalculating}
-        >
-          Calcular
-        </button>
-        <button
-          style={{ margin: '10px' }}
-          type="submit"
-          className="waves-effect waves-light btn"
-          onClick={onButtonClick}
-          disabled={isCalculating}
-        >
-          Probabilidades
-        </button>
       </div>
     </form>
   );
@@ -81,7 +85,7 @@ export default function Form({
 const styles = {
   flexRow: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
   },
