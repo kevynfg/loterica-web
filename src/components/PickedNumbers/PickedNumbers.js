@@ -10,7 +10,7 @@ export default function PickedNumbers({ children: numbers }) {
 
     return (
       <p style={{ fontSize: '1.5rem' }}>
-        Números sorteados: <strong>{formattedNumbers}</strong>
+        Números do Jogo Atual da Lotofácil: <strong>{formattedNumbers}</strong>
       </p>
     );
   }

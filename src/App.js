@@ -110,6 +110,7 @@ export default function App() {
 
       setGameNumbersSorted(sorteados);
       console.log('Repetidos:', sorteados);
+      console.log('Jogo Atual:', gameNumbers);
     }, 1000);
     return () => {
       clearTimeout(interval);
@@ -132,7 +133,20 @@ export default function App() {
       const newPickedNumbers = [...pickedNumbers];
 
       const item = newNumbers.find((item) => item.value === newNumber);
-      item.count++;
+
+      const FindSortedNumbers = (array) => {
+        for (let i = 0; i <= array.length - 1; i++) {
+          const itemFound = array[i];
+          if (itemFound === item.value.toString().padStart(3, '0')) {
+            setSelectedGameNumbers(item.value);
+            item.count++;
+          }
+        }
+        return item;
+      };
+      console.log('Found', FindSortedNumbers(gameNumbers));
+
+      console.log('Game', selectedGameNumbers);
 
       /*
       ESTE BLOCO CONTEM CÓDIGO DE PERMUTAÇÃO EM TESTE
@@ -155,68 +169,12 @@ export default function App() {
       //   return permArr;
       // }
 
-      const moreGamesArray = (number) => {
-        let RandomizedArray = [];
-        if (number) {
-          RandomizedArray = gameNumbersSorted.sort(() => {
-            return 0.5 - Math.random();
-          });
-        }
-        const item = RandomizedArray.slice(gameNumbersSorted, number).sort(
-          (a, b) => a - b
-        );
-
-        //prettier-ignore
-        if (selectedGameNumbers.includes(item)) {
-          let idx = selectedGameNumbers.indexOf(item);
-          setSelectedGameNumbers(selectedGameNumbers.splice(idx, 1));
-        } else {
-          setSelectedGameNumbers([...selectedGameNumbers, item]);
-        }
-
-        let newArray = [];
-        for (let i = 0; i < selectedGameNumbers.length; i++) {
-          const idx = selectedGameNumbers[i];
-          if (selectedGameNumbers.includes(idx)) {
-            const idxOf = selectedGameNumbers.indexOf(idx);
-            selectedGameNumbers.slice(idxOf, 1);
-          }
-          newArray.push(idx);
-          console.log('Array teste sem duplicates', newArray.sort());
-        }
-
-        return item;
-      };
-
-      console.log('Itens teste sem duplicates 2', moreGamesArray(4));
-
       //Se o contador chegou no limite colocado no input
       if (item.count === limit) {
         newPickedNumbers.push(item.value);
       }
       setNumbers(newNumbers);
       setPickedNumbers(newPickedNumbers);
-
-      // console.log('Heap Array', permute(gameNumbersSorted));
-
-      //Filtrar os números sem duplicates
-      const organizedArray = selectedGameNumbers.sort((a, b) => a - b);
-      console.log(
-        'Selected Numbers:',
-        organizedArray
-          .filter((item, index) => {
-            return organizedArray.indexOf(item) === index;
-          })
-          .sort()
-      );
-
-      // const newArray = [...new Set(selectedGameNumbers)];
-      // console.log(
-      //   'sem duplicate',
-      //   newArray
-      //     .filter((item, index) => newArray.indexOf(item) === index)
-      //     .sort()
-      // );
     }, 4); // Valor mínimo
 
     /**
@@ -259,31 +217,29 @@ export default function App() {
 
   return (
     <div className="container">
-      <h1 className="center">React Megasena</h1>
+      <h1 className="center">Lotérica Web</h1>
 
-      {!firstForm && (
-        <Form
-          onButtonClick={handleButtonClick}
-          onLimitChange={handleLimitChange}
-          onProbabilityChange={handleProbabilityChange}
-          data={{ isCalculating, limit, limitProbability }}
-        />
-      )}
-      {!firstForm && (
-        <Numbers>
-          {numbers.map((number) => {
-            const { id, value } = number;
-            const isPicked = pickedNumbers.some((item) => item === value);
+      <Form
+        onButtonClick={handleButtonClick}
+        onLimitChange={handleLimitChange}
+        onProbabilityChange={handleProbabilityChange}
+        data={{ isCalculating, limit, limitProbability }}
+      />
 
-            return (
-              <div key={id}>
-                <Number picked={isPicked}>{number}</Number>
-              </div>
-            );
-          })}
-        </Numbers>
-      )}
-      {!firstForm && <PickedNumbers>{pickedNumbers}</PickedNumbers>}
+      <Numbers>
+        {numbers.map((number) => {
+          const { id, value } = number;
+          const isPicked = pickedNumbers.some((item) => item === value);
+
+          return (
+            <div key={id}>
+              <Number picked={isPicked}>{number}</Number>
+            </div>
+          );
+        })}
+      </Numbers>
+
+      <PickedNumbers>{pickedNumbers}</PickedNumbers>
     </div>
   );
 }
