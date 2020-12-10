@@ -156,82 +156,77 @@ export default function App() {
     };
   });
 
-  useEffect(() => {
-    if (!canRun.current) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (!canRun.current) {
+  //     return;
+  //   }
 
-    const interval = setTimeout(() => {
-      if (pickedNumbers.length === 15) {
-        setIsCalculating(false);
-        return;
-      }
+  //   const interval = setTimeout(() => {
+  //     if (pickedNumbers.length === 15) {
+  //       setIsCalculating(false);
+  //       return;
+  //     }
 
-      const newNumber = generateNumber();
-      const newNumbers = [...numbers];
-      const newPickedNumbers = [...pickedNumbers];
+  //     const newNumber = generateNumber();
+  //     const newNumbers = [...numbers];
+  //     const newPickedNumbers = [...pickedNumbers];
 
-      const item = newNumbers.find((item) => item.value === newNumber);
+  //     const item = newNumbers.find((item) => item.value === newNumber);
 
-      const FindSortedNumbers = (array) => {
-        for (let i = 0; i <= array.length - 1; i++) {
-          const itemFound = array[i];
-          if (itemFound === item.value.toString().padStart(3, '0')) {
-            setSelectedGameNumbers(item.value);
-            item.count++;
-          }
-        }
-        return item;
-      };
-      FindSortedNumbers(gameNumbers);
+  //     const FindSortedNumbers = (array) => {
+  //       for (let i = 0; i <= array.length - 1; i++) {
+  //         const itemFound = array[i];
+  //         if (itemFound === item.value.toString().padStart(3, '0')) {
+  //           setSelectedGameNumbers(item.value);
+  //           item.count++;
+  //         }
+  //       }
+  //       return item;
+  //     };
+  //     FindSortedNumbers(gameNumbers);
 
-      /*
-      ESTE BLOCO CONTEM CÓDIGO DE PERMUTAÇÃO EM TESTE
-      */
+  //     /* Permutação/Probabilidade de números em jogos da loteria */
+  //     const splicedNumbers = gameNumbersSorted.slice(0, 6);
+  //     const permute = (nums, set = [], answers = []) => {
+  //       if (!nums.length) answers.push([...set]);
 
-      // let permArr = [],
-      //   usedChars = [];
-      // function permute(input) {
-      //   let i, ch;
-      //   for (i = 0; i < input.length; i++) {
-      //     ch = input.splice(i, 1)[0];
-      //     usedChars.push(ch);
-      //     if (input.length === 0) {
-      //       permArr.push(usedChars.slice());
-      //     }
-      //     permute(input);
-      //     input.splice(i, 0, ch);
-      //     usedChars.pop();
-      //   }
-      //   return permArr;
-      // }
+  //       for (let i = 0; i < nums.length; i++) {
+  //         const newNums = nums.filter((n, index) => index !== i);
+  //         set.push(nums[i]);
+  //         permute(newNums, set, answers);
+  //         set.pop();
+  //         console.log(newNums);
+  //       }
+  //       return answers;
+  //     };
+  //     console.log(permute(splicedNumbers));
 
-      //Se o contador chegou no limite colocado no input
-      if (item.count === limit) {
-        newPickedNumbers.push(item.value);
-      }
-      setNumbers(newNumbers);
-      setPickedNumbers(newPickedNumbers);
-    }, 4); // Valor mínimo
+  //     //Se o contador chegou no limite colocado no input
+  //     if (item.count === limit) {
+  //       newPickedNumbers.push(item.value);
+  //     }
+  //     setNumbers(newNumbers);
+  //     setPickedNumbers(newPickedNumbers);
+  //   }, 4); // Valor mínimo
 
-    /**
-     * Retorno obrigatório de um setInterval
-     * em useEffect. Perceba que o retorno é,
-     * na verdade, uma arrow function. Isso
-     * faz parte da sintaxe do useEffect
-     */
-    return () => {
-      clearTimeout(interval);
-    };
-  }, [
-    limit,
-    numbers,
-    pickedNumbers,
-    isCalculating,
-    gameNumbersSorted,
-    selectedGameNumbers,
-    gameNumbers,
-  ]);
+  //   /**
+  //    * Retorno obrigatório de um setInterval
+  //    * em useEffect. Perceba que o retorno é,
+  //    * na verdade, uma arrow function. Isso
+  //    * faz parte da sintaxe do useEffect
+  //    */
+  //   return () => {
+  //     clearTimeout(interval);
+  //   };
+  // }, [
+  //   limit,
+  //   numbers,
+  //   pickedNumbers,
+  //   isCalculating,
+  //   gameNumbersSorted,
+  //   selectedGameNumbers,
+  //   gameNumbers,
+  // ]);
 
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);

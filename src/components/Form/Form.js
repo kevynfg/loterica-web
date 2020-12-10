@@ -30,7 +30,7 @@ export default function Form({
                   id="inputLimit"
                   type="number"
                   min="1"
-                  max="999"
+                  max="10"
                   step="1"
                   value={limit}
                   onChange={handleLimitChange}
@@ -56,7 +56,7 @@ export default function Form({
                   id="inputProbability"
                   type="number"
                   min="1"
-                  max="999"
+                  max="5"
                   step="1"
                   value={limitProbability}
                   onChange={handleProbabilityChange}
