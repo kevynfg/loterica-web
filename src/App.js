@@ -117,6 +117,45 @@ export default function App() {
     };
   }, [gameNumbers, gameNumbersBefore]);
 
+  /*Initial State */
+  useEffect(() => {
+    const interval = setTimeout(() => {
+      if (pickedNumbers.length === 15) {
+        setIsCalculating(false);
+        return;
+      }
+
+      const newNumber = generateNumber();
+      const newNumbers = [...numbers];
+      const newPickedNumbers = [...pickedNumbers];
+
+      const item = newNumbers.find((item) => item.value === newNumber);
+
+      const FindSortedNumbers = (array) => {
+        for (let i = 0; i <= array.length - 1; i++) {
+          const itemFound = array[i];
+          if (itemFound === item.value.toString().padStart(3, '0')) {
+            setSelectedGameNumbers(item.value);
+            item.count++;
+          }
+        }
+        return item;
+      };
+      FindSortedNumbers(gameNumbers);
+
+      //Se o contador chegou no limite colocado no input
+      if (item.count === limit) {
+        newPickedNumbers.push(item.value);
+      }
+      setNumbers(newNumbers);
+      setPickedNumbers(newPickedNumbers);
+    }, 4); // Valor mínimo
+
+    return () => {
+      clearTimeout(interval);
+    };
+  });
+
   useEffect(() => {
     if (!canRun.current) {
       return;
@@ -144,9 +183,7 @@ export default function App() {
         }
         return item;
       };
-      console.log('Found', FindSortedNumbers(gameNumbers));
-
-      console.log('Game', selectedGameNumbers);
+      FindSortedNumbers(gameNumbers);
 
       /*
       ESTE BLOCO CONTEM CÓDIGO DE PERMUTAÇÃO EM TESTE
@@ -184,7 +221,6 @@ export default function App() {
      * faz parte da sintaxe do useEffect
      */
     return () => {
-      console.log('clearInterval');
       clearTimeout(interval);
     };
   }, [
