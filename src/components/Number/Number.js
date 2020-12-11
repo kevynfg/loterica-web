@@ -1,16 +1,22 @@
 import React from 'react';
 
-export default function Number({ children: number, picked }) {
+export default function Number({ children: number, picked, onChecked }) {
   const { description, count } = number;
+
+  console.log(onChecked);
 
   const pickedStyle = picked ? { backgroundColor: '#81ecec' } : {};
   return (
-    <div style={{ ...styles.container, ...pickedStyle }}>
+    <div style={{ ...styles.uncheckedContainer, ...pickedStyle }}>
       <span style={styles.number}>{description}</span>
 
-      <div style={styles.badgeContainer}>
-        <span style={styles.badge}>{count}</span>
-      </div>
+      {onChecked ? (
+        <div style={(styles.badgeContainer, styles.isHidden)}></div>
+      ) : (
+        <div style={styles.badgeContainer}>
+          <span style={styles.badge}>{count}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -26,6 +32,24 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
+    width: '80px',
+    flexWrap: 'wrap',
+  },
+
+  isHidden: {
+    visible: 'hidden',
+  },
+
+  uncheckedContainer: {
+    border: '1px solid lightgray',
+    borderRadius: '4px',
+    padding: '5px',
+    margin: '5px',
+
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     width: '80px',
     flexWrap: 'wrap',
   },

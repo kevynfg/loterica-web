@@ -41,7 +41,10 @@ export default function App() {
   const [gameNumbersSorted, setGameNumbersSorted] = useState([]);
   const [selectedGameNumbers, setSelectedGameNumbers] = useState([]);
   const [dataBeforeActualLotoFacil, setBeforeActualLotoFacil] = useState([]);
+  const [pairLimit, setPairLimit] = useState(1);
+  const [oddLimit, setOddLimit] = useState(1);
   const [firstForm, setFirstForm] = useState(false);
+  const [probabilityCheck, setProbabilityCheck] = useState(true);
   const canRun = useRef(false);
 
   const getGameBefore = (gameDate) => {
@@ -124,7 +127,6 @@ export default function App() {
         setIsCalculating(false);
         return;
       }
-
       const newNumber = generateNumber();
       const newNumbers = [...numbers];
       const newPickedNumbers = [...pickedNumbers];
@@ -235,6 +237,18 @@ export default function App() {
     setLimitProbability(newLimit);
   };
 
+  const handlePairChange = (newLimit) => {
+    setLimitProbability(newLimit);
+  };
+
+  const handleOddChange = (newLimit) => {
+    setLimitProbability(newLimit);
+  };
+
+  const handleCheck = (event) => {
+    setProbabilityCheck(event);
+  };
+
   const handleButtonClick = () => {
     if (!limit) {
       return;
@@ -254,17 +268,21 @@ export default function App() {
         onButtonClick={handleButtonClick}
         onLimitChange={handleLimitChange}
         onProbabilityChange={handleProbabilityChange}
-        data={{ isCalculating, limit, limitProbability }}
+        onPairChange={handlePairChange}
+        onOddChange={handleOddChange}
+        onChecked={handleCheck}
+        data={{ isCalculating, limit, limitProbability, probabilityCheck }}
       />
 
       <Numbers>
         {numbers.map((number) => {
           const { id, value } = number;
           const isPicked = pickedNumbers.some((item) => item === value);
-
           return (
             <div key={id}>
-              <Number picked={isPicked}>{number}</Number>
+              <Number picked={isPicked} onChecked={probabilityCheck}>
+                {number}
+              </Number>
             </div>
           );
         })}

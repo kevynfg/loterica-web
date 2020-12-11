@@ -4,6 +4,9 @@ export default function Form({
   onLimitChange,
   onButtonClick,
   onProbabilityChange,
+  onPairChange,
+  onOddChange,
+  onChecked,
   data,
 }) {
   const handleLimitChange = ({ target }) => {
@@ -14,7 +17,11 @@ export default function Form({
     //parseInt é mais seguro, com 10 -> decimal
     onProbabilityChange(parseInt(target.value, 10));
   };
-  const { limit, isCalculating, limitProbability } = data;
+  const handleCheckedChange = (event) => {
+    onChecked(event.target.checked);
+    console.log(event.target.checked);
+  };
+  const { limit, isCalculating, limitProbability, probabilityCheck } = data;
 
   return (
     <form>
@@ -39,6 +46,7 @@ export default function Form({
                 <label htmlFor="inputLimit" className="active">
                   Quantidade de sorteios:
                 </label>
+
                 <button
                   type="submit"
                   className="waves-effect waves-light btn"
@@ -65,6 +73,17 @@ export default function Form({
                 <label htmlFor="inputProbability" className="active">
                   Probabilidades:
                 </label>
+                <p>
+                  <label>
+                    <input
+                      type="checkbox"
+                      className="filled-in"
+                      checked={probabilityCheck}
+                      onChange={handleCheckedChange}
+                    />
+                    <span>Filled in</span>
+                  </label>
+                </p>
                 <button
                   type="submit"
                   className="waves-effect waves-light btn"
