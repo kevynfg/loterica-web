@@ -3,7 +3,7 @@ import React from 'react';
 export default function Number({ children: number, picked, onChecked }) {
   const { description, count } = number;
 
-  console.log(onChecked);
+  //console.log(onChecked);
 
   const pickedStyle = picked ? { backgroundColor: '#81ecec' } : {};
   return (

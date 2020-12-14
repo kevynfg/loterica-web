@@ -9,7 +9,7 @@ import Number from './components/Number/Number';
 function getEmptyArray() {
   const array = Array.from({ length: 25 }).map((_, index) => {
     const id = index + 1;
-    const description = id.toString().padStart(3, '0');
+    const description = id.toString().padStart(2, '0');
 
     return {
       id,
@@ -60,9 +60,15 @@ export default function App() {
         );
 
         console.log('Jogo Atual', data.data[0]);
-
+        let tempArray = [];
         const { listaDezenas } = data.data[0];
-        setGameNumbers(listaDezenas);
+        for (let i = 0; i < listaDezenas.length; i++) {
+          const newValue = listaDezenas[i].substring(1);
+          tempArray.push(newValue);
+          setGameNumbers(tempArray);
+        }
+        //setGameNumbers(listaDezenas);
+        console.log('new value', gameNumbers);
         setDataLotoFacil(data.data[0]);
       } catch (error) {
         alert('ocorreu um erro ao buscar os items');
@@ -88,9 +94,12 @@ export default function App() {
 
         console.log('Jogo Anterior', data.data);
         const { listaDezenas } = data.data;
-
+        for (let i = 0; i <= listaDezenas.length - 1; i++) {
+          const newValue = listaDezenas[i].substring(1);
+          setGameNumbersBefore([...gameNumbersBefore, newValue]);
+        }
         setBeforeActualLotoFacil(data.data);
-        setGameNumbersBefore(listaDezenas);
+        //setGameNumbersBefore(listaDezenas);
       } catch (err) {
         console.log(err);
       }
@@ -132,11 +141,11 @@ export default function App() {
       const newPickedNumbers = [...pickedNumbers];
 
       const item = newNumbers.find((item) => item.value === newNumber);
-
       const FindSortedNumbers = (array) => {
         for (let i = 0; i <= array.length - 1; i++) {
           const itemFound = array[i];
-          if (itemFound === item.value.toString().padStart(3, '0')) {
+
+          if (itemFound === item.description) {
             setSelectedGameNumbers(item.value);
             item.count++;
           }

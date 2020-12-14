@@ -5,7 +5,7 @@ export default function PickedNumbers({ children: numbers }) {
 
   if (numbers.length > 0) {
     const formattedNumbers = numbers
-      .map((number) => number.toString().padStart(3, '0'))
+      .map((number) => number.toString().padStart(2, '0'))
       .join(', ');
 
     return (
