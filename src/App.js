@@ -46,7 +46,10 @@ export default function App() {
   const [firstForm, setFirstForm] = useState(false);
   const [probabilityCheck, setProbabilityCheck] = useState(true);
   const canRun = useRef(false);
+  const canCalculate = useRef(false);
+  const canCalculateProbability = useRef(false);
 
+  //Pega os dados do jogo anterior da Lotofácil
   const getGameBefore = (gameDate) => {
     const { concurso } = gameDate;
     return concurso - 1;
@@ -68,7 +71,6 @@ export default function App() {
           setGameNumbers(tempArray);
         }
         //setGameNumbers(listaDezenas);
-        console.log('new value', gameNumbers);
         setDataLotoFacil(data.data[0]);
       } catch (error) {
         alert('ocorreu um erro ao buscar os items');
@@ -131,6 +133,10 @@ export default function App() {
 
   /*Initial State */
   useEffect(() => {
+    //Anula o efeito deste effect, para que o cálculo de numeros aleatórios aconteça
+    if (canCalculate.current) {
+      return;
+    }
     const interval = setTimeout(() => {
       if (pickedNumbers.length === 15) {
         setIsCalculating(false);
@@ -167,11 +173,56 @@ export default function App() {
     };
   });
 
+  //Calcular números aleatórios
+  useEffect(() => {
+    if (!canCalculate.current) {
+      return;
+    }
+    const interval = setTimeout(() => {
+      if (pickedNumbers.length === 15) {
+        setIsCalculating(false);
+        console.log('Arrays de Probabilidades: ', gameNumbersSorted);
+        return;
+      }
+      const newNumber = generateNumber();
+      const newNumbers = [...numbers];
+      const newPickedNumbers = [...pickedNumbers];
+
+      const item = newNumbers.find((item) => item.value === newNumber);
+      item.count++;
+
+      /* Permutação/Probabilidade de números em jogos da loteria */
+      const splicedNumbers = gameNumbers.slice(0, 5);
+      const permute = (nums, set = [], answers = []) => {
+        if (!nums.length) answers.push([...set]);
+
+        for (let i = 0; i < nums.length; i++) {
+          const newNums = nums.filter((n, index) => index !== i);
+          set.push(nums[i]);
+          permute(newNums, set, answers);
+          set.pop();
+        }
+        return answers;
+      };
+
+      //Se o contador chegou no limite colocado no input
+      if (item.count === limit) {
+        newPickedNumbers.push(item.value);
+      }
+      setGameNumbersSorted(permute(splicedNumbers));
+      setNumbers(newNumbers);
+      setPickedNumbers(newPickedNumbers);
+    }, 4); // Valor mínimo
+
+    return () => {
+      clearTimeout(interval);
+    };
+  }, [limit, numbers, pickedNumbers, isCalculating]);
+
   // useEffect(() => {
-  //   if (!canRun.current) {
+  //   if (canCalculate.current) {
   //     return;
   //   }
-
   //   const interval = setTimeout(() => {
   //     if (pickedNumbers.length === 15) {
   //       setIsCalculating(false);
@@ -183,21 +234,9 @@ export default function App() {
   //     const newPickedNumbers = [...pickedNumbers];
 
   //     const item = newNumbers.find((item) => item.value === newNumber);
-
-  //     const FindSortedNumbers = (array) => {
-  //       for (let i = 0; i <= array.length - 1; i++) {
-  //         const itemFound = array[i];
-  //         if (itemFound === item.value.toString().padStart(3, '0')) {
-  //           setSelectedGameNumbers(item.value);
-  //           item.count++;
-  //         }
-  //       }
-  //       return item;
-  //     };
-  //     FindSortedNumbers(gameNumbers);
-
+  //     item.count++;
   //     /* Permutação/Probabilidade de números em jogos da loteria */
-  //     const splicedNumbers = gameNumbersSorted.slice(0, 6);
+  //     const splicedNumbers = gameNumbersSorted.slice(0, 5);
   //     const permute = (nums, set = [], answers = []) => {
   //       if (!nums.length) answers.push([...set]);
 
@@ -206,7 +245,6 @@ export default function App() {
   //         set.push(nums[i]);
   //         permute(newNums, set, answers);
   //         set.pop();
-  //         console.log(newNums);
   //       }
   //       return answers;
   //     };
@@ -262,8 +300,8 @@ export default function App() {
     if (!limit) {
       return;
     }
+    canCalculate.current = true;
     canRun.current = true;
-
     setNumbers(getEmptyArray());
     setPickedNumbers([]);
     setIsCalculating(true);
@@ -275,8 +313,9 @@ export default function App() {
 
       <Form
         onButtonClick={handleButtonClick}
-        onLimitChange={handleLimitChange}
+        onProbabilityClick={handleProbabilityChange}
         onProbabilityChange={handleProbabilityChange}
+        onLimitChange={handleLimitChange}
         onPairChange={handlePairChange}
         onOddChange={handleOddChange}
         onChecked={handleCheck}

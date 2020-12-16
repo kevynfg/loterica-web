@@ -3,6 +3,7 @@ import React from 'react';
 export default function Form({
   onLimitChange,
   onButtonClick,
+  onProbabilityClick,
   onProbabilityChange,
   onPairChange,
   onOddChange,
@@ -44,7 +45,7 @@ export default function Form({
                   disabled={isCalculating}
                 />
                 <label htmlFor="inputLimit" className="active">
-                  Quantidade de sorteios:
+                  Calcular sorteios aleatórios:
                 </label>
 
                 <button
@@ -73,7 +74,7 @@ export default function Form({
                 <label htmlFor="inputProbability" className="active">
                   Probabilidades:
                 </label>
-                <p>
+                {/* <p>
                   <label>
                     <input
                       type="checkbox"
@@ -83,11 +84,11 @@ export default function Form({
                     />
                     <span>Filled in</span>
                   </label>
-                </p>
+                </p> */}
                 <button
                   type="submit"
                   className="waves-effect waves-light btn"
-                  onClick={onButtonClick}
+                  onClick={onProbabilityClick}
                   disabled={isCalculating}
                 >
                   Probabilidades
