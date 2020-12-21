@@ -96,9 +96,11 @@ export default function App() {
 
         console.log('Jogo Anterior', data.data);
         const { listaDezenas } = data.data;
+        let newArray = []
         for (let i = 0; i <= listaDezenas.length - 1; i++) {
           const newValue = listaDezenas[i].substring(1);
-          setGameNumbersBefore([...gameNumbersBefore, newValue]);
+          newArray.push(newValue)
+          setGameNumbersBefore(newArray);
         }
         setBeforeActualLotoFacil(data.data);
         //setGameNumbersBefore(listaDezenas);
@@ -305,6 +307,7 @@ export default function App() {
     setNumbers(getEmptyArray());
     setPickedNumbers([]);
     setIsCalculating(true);
+    setProbabilityCheck(false)
   };
 
   return (
