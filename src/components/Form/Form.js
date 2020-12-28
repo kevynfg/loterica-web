@@ -5,6 +5,7 @@ export default function Form({
   onButtonClick,
   onProbabilityClick,
   onProbabilityChange,
+  onRandomChecked,
   onPairChange,
   onOddChange,
   onChecked,
@@ -22,7 +23,16 @@ export default function Form({
     onChecked(event.target.checked);
     console.log(event.target.checked);
   };
-  const { limit, isCalculating, limitProbability, probabilityCheck } = data;
+  const handleCheckedRandom = (event) => {
+    onRandomChecked(event.target.checked);
+  };
+  const {
+    limit,
+    isCalculating,
+    limitProbability,
+    probabilityCheck,
+    randomCheck,
+  } = data;
 
   return (
     <form>
@@ -47,7 +57,6 @@ export default function Form({
                 <label htmlFor="inputLimit" className="active">
                   Calcular sorteios aleatórios:
                 </label>
-
                 <button
                   type="submit"
                   className="waves-effect waves-light btn"
@@ -56,6 +65,18 @@ export default function Form({
                 >
                   Calcular
                 </button>
+                <p>
+                  <label>
+                    <input
+                      name="group1"
+                      type="checkbox"
+                      checked={randomCheck}
+                      value="randomNumbers"
+                      onChange={handleCheckedRandom}
+                    />
+                    <span>Números aleatórios</span>
+                  </label>
+                </p>
               </div>
               <div
                 className="input-field col s6"
@@ -74,6 +95,7 @@ export default function Form({
                 <label htmlFor="inputProbability" className="active">
                   Probabilidades:
                 </label>
+
                 {/* <p>
                   <label>
                     <input
@@ -88,11 +110,23 @@ export default function Form({
                 <button
                   type="submit"
                   className="waves-effect waves-light btn"
-                  onClick={onProbabilityClick}
+                  onClick={onButtonClick}
                   disabled={isCalculating}
                 >
                   Probabilidades
                 </button>
+                <p>
+                  <label>
+                    <input
+                      name="group1"
+                      type="checkbox"
+                      value="probNumbers"
+                      checked={probabilityCheck}
+                      onChange={handleCheckedChange}
+                    />
+                    <span>Calcular Prob</span>
+                  </label>
+                </p>
               </div>
             </div>
           </div>
