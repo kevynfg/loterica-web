@@ -1,7 +1,8 @@
 import React from 'react';
 
-export default function Number({ children: number, picked, onChecked }) {
+export default function Number({ children: number, picked, onChecked, data }) {
   const { description, count } = number;
+  const { randomCheck } = data;
 
   //console.log(onChecked);
 

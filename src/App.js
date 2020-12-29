@@ -45,7 +45,7 @@ export default function App() {
   const [oddLimit, setOddLimit] = useState(1);
   const [firstForm, setFirstForm] = useState(false);
   const [probabilityCheck, setProbabilityCheck] = useState(true);
-  const [randomCheck, setRandomCheck] = useState(true);
+  const [randomCheck, setRandomCheck] = useState(false);
   const canRun = useRef(false);
   const canCalculate = useRef(false);
   const canCalculateProbability = useRef(false);
@@ -194,7 +194,7 @@ export default function App() {
       item.count++;
 
       //Se o contador chegou no limite colocado no input
-      if (item.count === limit || item.count === limitProbability) {
+      if (item.count === limit) {
         newPickedNumbers.push(item.value);
       }
       setGameNumbersSorted(permute(gameNumbers));
@@ -237,20 +237,6 @@ export default function App() {
 
   //     const item = newNumbers.find((item) => item.value === newNumber);
   //     item.count++;
-  //     /* Permutação/Probabilidade de números em jogos da loteria */
-  //     const splicedNumbers = gameNumbersSorted.slice(0, 5);
-  //     const permute = (nums, set = [], answers = []) => {
-  //       if (!nums.length) answers.push([...set]);
-
-  //       for (let i = 0; i < nums.length; i++) {
-  //         const newNums = nums.filter((n, index) => index !== i);
-  //         set.push(nums[i]);
-  //         permute(newNums, set, answers);
-  //         set.pop();
-  //       }
-  //       return answers;
-  //     };
-  //     console.log(permute(splicedNumbers));
 
   //     //Se o contador chegou no limite colocado no input
   //     if (item.count === limit) {
@@ -296,9 +282,11 @@ export default function App() {
 
   const handleCheck = (event) => {
     setProbabilityCheck(event);
+    setRandomCheck(false);
   };
   const handleCheckRandom = (event) => {
     setRandomCheck(event);
+    setProbabilityCheck(false);
   };
 
   const handleButtonClick = () => {
@@ -311,6 +299,19 @@ export default function App() {
     setPickedNumbers([]);
     setIsCalculating(true);
     setProbabilityCheck(false);
+    setRandomCheck(true);
+  };
+  const handleProbClick = () => {
+    if (!limit) {
+      return;
+    }
+    canCalculate.current = true;
+    canRun.current = true;
+    setNumbers(getEmptyArray());
+    setPickedNumbers([]);
+    setIsCalculating(true);
+    setProbabilityCheck(true);
+    setRandomCheck(false);
   };
 
   return (
@@ -319,6 +320,7 @@ export default function App() {
 
       <Form
         onButtonClick={handleButtonClick}
+        onProbClick={handleProbClick}
         onProbabilityClick={handleProbabilityChange}
         onProbabilityChange={handleProbabilityChange}
         onLimitChange={handleLimitChange}
@@ -335,19 +337,45 @@ export default function App() {
         }}
       />
 
-      <Numbers>
-        {numbers.map((number) => {
-          const { id, value } = number;
-          const isPicked = pickedNumbers.some((item) => item === value);
-          return (
-            <div key={id}>
-              <Number picked={isPicked} onChecked={probabilityCheck}>
-                {number}
-              </Number>
-            </div>
-          );
-        })}
-      </Numbers>
+      {randomCheck && (
+        <Numbers>
+          {numbers.map((number) => {
+            const { id, value } = number;
+            const isPicked = pickedNumbers.some((item) => item === value);
+            return (
+              <div key={id}>
+                <Number
+                  picked={isPicked}
+                  onChecked={probabilityCheck}
+                  data={{ randomCheck }}
+                >
+                  {number}
+                </Number>
+              </div>
+            );
+          })}
+        </Numbers>
+      )}
+
+      {probabilityCheck && (
+        <Numbers>
+          {numbers.map((number) => {
+            const { id, value } = number;
+            const isPicked = pickedNumbers.some((item) => item === value);
+            return (
+              <div key={id}>
+                <Number
+                  picked={isPicked}
+                  onChecked={probabilityCheck}
+                  data={{ randomCheck }}
+                >
+                  {number}
+                </Number>
+              </div>
+            );
+          })}
+        </Numbers>
+      )}
 
       <PickedNumbers>{pickedNumbers}</PickedNumbers>
     </div>

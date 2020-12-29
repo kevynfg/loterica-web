@@ -3,7 +3,7 @@ import React from 'react';
 export default function Form({
   onLimitChange,
   onButtonClick,
-  onProbabilityClick,
+  onProbClick,
   onProbabilityChange,
   onRandomChecked,
   onPairChange,
@@ -25,6 +25,7 @@ export default function Form({
   };
   const handleCheckedRandom = (event) => {
     onRandomChecked(event.target.checked);
+    console.log(event.target.checked);
   };
   const {
     limit,
@@ -68,7 +69,6 @@ export default function Form({
                 <p>
                   <label>
                     <input
-                      name="group1"
                       type="checkbox"
                       checked={randomCheck}
                       value="randomNumbers"
@@ -110,7 +110,7 @@ export default function Form({
                 <button
                   type="submit"
                   className="waves-effect waves-light btn"
-                  onClick={onButtonClick}
+                  onClick={onProbClick}
                   disabled={isCalculating}
                 >
                   Probabilidades
@@ -118,7 +118,6 @@ export default function Form({
                 <p>
                   <label>
                     <input
-                      name="group1"
                       type="checkbox"
                       value="probNumbers"
                       checked={probabilityCheck}
