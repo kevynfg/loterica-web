@@ -184,7 +184,7 @@ export default function App() {
       if (pickedNumbers.length === 15) {
         setIsProbability(false);
         setIsCalculating(false);
-        console.log('Arrays de Probabilidades: ', gameNumbersSorted);
+        console.log('useEffect RandomNumbers');
         return;
       }
       const newNumber = generateNumber();
@@ -198,7 +198,6 @@ export default function App() {
       if (item.count === limit) {
         newPickedNumbers.push(item.value);
       }
-      setGameNumbersSorted(permute(gameNumbers));
       setNumbers(newNumbers);
       setPickedNumbers(newPickedNumbers);
     }, 4); // Valor mínimo
@@ -206,21 +205,7 @@ export default function App() {
     return () => {
       clearTimeout(interval);
     };
-  }, [limit, numbers, pickedNumbers, isCalculating, limitProbability]);
-
-  /* Permutação/Probabilidade de números em jogos da loteria */
-  const permute = (nums, set = [], answers = []) => {
-    const splicedNumbers = nums.slice(0, 4);
-    if (!splicedNumbers.length) answers.push([...set]);
-
-    for (let i = 0; i < splicedNumbers.length; i++) {
-      const newNums = splicedNumbers.filter((n, index) => index !== i);
-      set.push(splicedNumbers[i]);
-      permute(newNums, set, answers);
-      set.pop();
-    }
-    return answers;
-  };
+  }, [limit, numbers, pickedNumbers, isCalculating]);
 
   /*Controlar botão para calcular probabilidades */
   useEffect(() => {
@@ -232,6 +217,8 @@ export default function App() {
       if (pickedNumbers.length === 15) {
         setIsProbability(false);
         setIsCalculating(false);
+        console.log('useEffect Probabilidades');
+        console.log('Arrays de Probabilidades: ', gameNumbersSorted);
         return;
       }
 
@@ -240,12 +227,14 @@ export default function App() {
       const newPickedNumbers = [...pickedNumbers];
 
       const item = newNumbers.find((item) => item.value === newNumber);
+
       item.count++;
 
       //Se o contador chegou no limite colocado no input
-      if (item.count === limit) {
+      if (item.count === limitProbability) {
         newPickedNumbers.push(item.value);
       }
+      //setGameNumbersSorted(permute(gameNumbers));
       setNumbers(newNumbers);
       setPickedNumbers(newPickedNumbers);
     }, 4); // Valor mínimo
@@ -265,7 +254,29 @@ export default function App() {
     pickedNumbers,
     isProbability,
     probabilityCheck,
+    gameNumbers,
+    gameNumbersSorted,
+    selectedGameNumbers,
   ]);
+
+  useEffect(() => {
+    setNumbers(getEmptyArray());
+    setPickedNumbers([]);
+  }, [randomCheck, probabilityCheck]);
+
+  /* Permutação/Probabilidade de números em jogos da loteria */
+  const permute = (nums, set = [], answers = []) => {
+    const splicedNumbers = nums.slice(0, limitProbability);
+    if (!splicedNumbers.length) answers.push([...set]);
+
+    for (let i = 0; i < splicedNumbers.length; i++) {
+      const newNums = splicedNumbers.filter((n, index) => index !== i);
+      set.push(splicedNumbers[i]);
+      permute(newNums, set, answers);
+      set.pop();
+    }
+    return answers;
+  };
 
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
@@ -312,6 +323,7 @@ export default function App() {
     canCalculate.current = false;
     canCalculateProbability.current = true;
     canRun.current = true;
+    setGameNumbersSorted(permute(gameNumbers));
     setNumbers(getEmptyArray());
     setPickedNumbers([]);
     setIsProbability(true);
