@@ -175,13 +175,14 @@ export default function App() {
     };
   });
 
-  //Calcular números aleatórios
+  /*Calcular números aleatórios */
   useEffect(() => {
     if (!canCalculate.current) {
       return;
     }
     const interval = setTimeout(() => {
       if (pickedNumbers.length === 15) {
+        setIsProbability(false);
         setIsCalculating(false);
         console.log('Arrays de Probabilidades: ', gameNumbersSorted);
         return;
@@ -205,14 +206,7 @@ export default function App() {
     return () => {
       clearTimeout(interval);
     };
-  }, [
-    limit,
-    numbers,
-    pickedNumbers,
-    isCalculating,
-    limitProbability,
-    probabilityCheck,
-  ]);
+  }, [limit, numbers, pickedNumbers, isCalculating, limitProbability]);
 
   /* Permutação/Probabilidade de números em jogos da loteria */
   const permute = (nums, set = [], answers = []) => {
@@ -228,13 +222,16 @@ export default function App() {
     return answers;
   };
 
+  /*Controlar botão para calcular probabilidades */
   useEffect(() => {
     if (!canCalculateProbability.current) {
       return;
     }
+
     const interval = setTimeout(() => {
       if (pickedNumbers.length === 15) {
         setIsProbability(false);
+        setIsCalculating(false);
         return;
       }
 
@@ -304,6 +301,7 @@ export default function App() {
     setNumbers(getEmptyArray());
     setPickedNumbers([]);
     setIsCalculating(true);
+    setIsProbability(true);
     setProbabilityCheck(false);
     setRandomCheck(true);
   };
@@ -317,6 +315,7 @@ export default function App() {
     setNumbers(getEmptyArray());
     setPickedNumbers([]);
     setIsProbability(true);
+    setIsCalculating(true);
     setProbabilityCheck(true);
     setRandomCheck(false);
   };
