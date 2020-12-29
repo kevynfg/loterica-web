@@ -18,6 +18,13 @@ export default function Number({ children: number, picked, onChecked, data }) {
           <span style={styles.badge}>{count}</span>
         </div>
       )}
+      {randomCheck ? (
+        <div style={(styles.badgeContainer, styles.isHidden)}></div>
+      ) : (
+        <div style={styles.badgeContainer}>
+          <span style={styles.badge}>{count}</span>
+        </div>
+      )}
     </div>
   );
 }

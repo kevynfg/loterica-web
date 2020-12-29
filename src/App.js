@@ -33,6 +33,7 @@ export default function App() {
   const [numbers, setNumbers] = useState(getEmptyArray());
   const [pickedNumbers, setPickedNumbers] = useState([]);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [isProbability, setIsProbability] = useState(false);
   const [limit, setLimit] = useState(1);
   const [limitProbability, setLimitProbability] = useState(1);
   const [dataLotoFacil, setDataLotoFacil] = useState([]);
@@ -161,7 +162,6 @@ export default function App() {
         return item;
       };
       FindSortedNumbers(gameNumbers);
-
       //Se o contador chegou no limite colocado no input
       if (item.count === limit) {
         newPickedNumbers.push(item.value);
@@ -205,7 +205,14 @@ export default function App() {
     return () => {
       clearTimeout(interval);
     };
-  }, [limit, numbers, pickedNumbers, isCalculating, limitProbability]);
+  }, [
+    limit,
+    numbers,
+    pickedNumbers,
+    isCalculating,
+    limitProbability,
+    probabilityCheck,
+  ]);
 
   /* Permutação/Probabilidade de números em jogos da loteria */
   const permute = (nums, set = [], answers = []) => {
@@ -221,49 +228,47 @@ export default function App() {
     return answers;
   };
 
-  // useEffect(() => {
-  //   if (canCalculate.current) {
-  //     return;
-  //   }
-  //   const interval = setTimeout(() => {
-  //     if (pickedNumbers.length === 15) {
-  //       setIsCalculating(false);
-  //       return;
-  //     }
+  useEffect(() => {
+    if (!canCalculateProbability.current) {
+      return;
+    }
+    const interval = setTimeout(() => {
+      if (pickedNumbers.length === 15) {
+        setIsProbability(false);
+        return;
+      }
 
-  //     const newNumber = generateNumber();
-  //     const newNumbers = [...numbers];
-  //     const newPickedNumbers = [...pickedNumbers];
+      const newNumber = generateNumber();
+      const newNumbers = [...numbers];
+      const newPickedNumbers = [...pickedNumbers];
 
-  //     const item = newNumbers.find((item) => item.value === newNumber);
-  //     item.count++;
+      const item = newNumbers.find((item) => item.value === newNumber);
+      item.count++;
 
-  //     //Se o contador chegou no limite colocado no input
-  //     if (item.count === limit) {
-  //       newPickedNumbers.push(item.value);
-  //     }
-  //     setNumbers(newNumbers);
-  //     setPickedNumbers(newPickedNumbers);
-  //   }, 4); // Valor mínimo
+      //Se o contador chegou no limite colocado no input
+      if (item.count === limit) {
+        newPickedNumbers.push(item.value);
+      }
+      setNumbers(newNumbers);
+      setPickedNumbers(newPickedNumbers);
+    }, 4); // Valor mínimo
 
-  //   /**
-  //    * Retorno obrigatório de um setInterval
-  //    * em useEffect. Perceba que o retorno é,
-  //    * na verdade, uma arrow function. Isso
-  //    * faz parte da sintaxe do useEffect
-  //    */
-  //   return () => {
-  //     clearTimeout(interval);
-  //   };
-  // }, [
-  //   limit,
-  //   numbers,
-  //   pickedNumbers,
-  //   isCalculating,
-  //   gameNumbersSorted,
-  //   selectedGameNumbers,
-  //   gameNumbers,
-  // ]);
+    /**
+     * Retorno obrigatório de um setInterval
+     * em useEffect. Perceba que o retorno é,
+     * na verdade, uma arrow function. Isso
+     * faz parte da sintaxe do useEffect
+     */
+    return () => {
+      clearTimeout(interval);
+    };
+  }, [
+    limitProbability,
+    numbers,
+    pickedNumbers,
+    isProbability,
+    probabilityCheck,
+  ]);
 
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
@@ -294,6 +299,7 @@ export default function App() {
       return;
     }
     canCalculate.current = true;
+    canCalculateProbability.current = false;
     canRun.current = true;
     setNumbers(getEmptyArray());
     setPickedNumbers([]);
@@ -302,14 +308,15 @@ export default function App() {
     setRandomCheck(true);
   };
   const handleProbClick = () => {
-    if (!limit) {
+    if (!limitProbability) {
       return;
     }
-    canCalculate.current = true;
+    canCalculate.current = false;
+    canCalculateProbability.current = true;
     canRun.current = true;
     setNumbers(getEmptyArray());
     setPickedNumbers([]);
-    setIsCalculating(true);
+    setIsProbability(true);
     setProbabilityCheck(true);
     setRandomCheck(false);
   };
@@ -334,6 +341,7 @@ export default function App() {
           limitProbability,
           probabilityCheck,
           randomCheck,
+          isProbability,
         }}
       />
 

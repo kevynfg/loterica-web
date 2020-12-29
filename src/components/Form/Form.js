@@ -33,6 +33,7 @@ export default function Form({
     limitProbability,
     probabilityCheck,
     randomCheck,
+    isProbability,
   } = data;
 
   return (
@@ -90,7 +91,7 @@ export default function Form({
                   step="1"
                   value={limitProbability}
                   onChange={handleProbabilityChange}
-                  disabled={isCalculating}
+                  disabled={isProbability}
                 />
                 <label htmlFor="inputProbability" className="active">
                   Probabilidades:
@@ -111,7 +112,7 @@ export default function Form({
                   type="submit"
                   className="waves-effect waves-light btn"
                   onClick={onProbClick}
-                  disabled={isCalculating}
+                  disabled={isProbability}
                 >
                   Probabilidades
                 </button>
